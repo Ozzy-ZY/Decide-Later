@@ -1,0 +1,67 @@
+name: Build, publish and deploy to MonsterASP.NET
+on: [push]
+
+jobs:
+  build_and_deploy:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0
+
+      - name: Install dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+      - name: Publish
+        run: dotnet publish --configuration Release --output ./publish --runtime win-x86
+
+      - name: Test with .NET
+        run: dotnet test
+
+      - name: Deploy to MonsterASP.NET via WebDeploy
+        uses: rasmusbuchholdt/simply-web-deploy@2.1.0
+        with:
+          website-name: ${{ secrets.WEBSITE_NAME }}
+          server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
+          server-username: ${{ secrets.SERVER_USERNAME }}
+          server-password: ${{ secrets.SERVER_PASSWORD }}
+      - name: Validate deployment (with retries)
+        shell: pwsh
+        run: |
+          $url = "https://balzgram.runasp.net/health"
+          $maxRetries = 5
+          $delaySeconds = 10
+          $success = $false
+
+          for ($i = 1; $i -le $maxRetries; $i++) {
+            try {
+              Write-Host "Attempt ${i}: Checking $url..."
+              $response = Invoke-WebRequest -Uri $url -TimeoutSec 15
+          
+              if ($response.StatusCode -eq 200) {
+                Write-Host "✅ Health check passed. Status code: $($response.StatusCode)"
+                $success = $true
+                break
+              } else {
+                Write-Warning "⚠️ Attempt ${i} failed. Status code: $($response.StatusCode)"
+              }
+            }
+            catch {
+              Write-Warning "⚠️ Attempt ${i} failed with error: $($_.Exception.Message)"
+            }
+
+            if ($i -lt $maxRetries) {
+              Write-Host "Waiting $delaySeconds seconds before retry..."
+              Start-Sleep -Seconds $delaySeconds
+            }
+          }
+
+          if (-not $success) {
+            Write-Error "❌ Health check failed after $maxRetries attempts."
+            exit 1
+          }
