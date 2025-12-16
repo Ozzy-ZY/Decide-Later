@@ -11,7 +11,13 @@ namespace WebProj.Controllers;
 [Authorize]
 public class ChatsController(IChatService chatService, IMessageService messageService) : ControllerBase
 {
+    /// <summary>
+    /// Creates a new private chat with another user.
+    /// </summary>
     [HttpPost("private")]
+    [ProducesResponseType(typeof(ChatDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<ChatDto>> CreatePrivateChat([FromBody] CreatePrivateChatRequestDto request, CancellationToken cancellationToken)
     {
         var userId = GetCurrentUserId();
@@ -19,7 +25,13 @@ public class ChatsController(IChatService chatService, IMessageService messageSe
         return Ok(chat);
     }
 
+    /// <summary>
+    /// Creates a new group chat with multiple users.
+    /// </summary>
     [HttpPost("group")]
+    [ProducesResponseType(typeof(ChatDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<ChatDto>> CreateGroupChat([FromBody] CreateGroupChatRequestDto request, CancellationToken cancellationToken)
     {
         var userId = GetCurrentUserId();
@@ -27,7 +39,15 @@ public class ChatsController(IChatService chatService, IMessageService messageSe
         return Ok(chat);
     }
 
+    /// <summary>
+    /// Adds a user to an existing group chat.
+    /// </summary>
     [HttpPost("{chatId:guid}/members")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> AddUserToGroup(Guid chatId, [FromBody] AddUserToGroupRequestDto request, CancellationToken cancellationToken)
     {
         var userId = GetCurrentUserId();
@@ -35,7 +55,15 @@ public class ChatsController(IChatService chatService, IMessageService messageSe
         return NoContent();
     }
 
+    /// <summary>
+    /// Removes a user from a group chat.
+    /// </summary>
     [HttpDelete("{chatId:guid}/members/{userName}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> RemoveUserFromGroup(Guid chatId, string userName, CancellationToken cancellationToken)
     {
         var userId = GetCurrentUserId();
@@ -43,7 +71,14 @@ public class ChatsController(IChatService chatService, IMessageService messageSe
         return NoContent();
     }
 
+    /// <summary>
+    /// Leaves a group chat.
+    /// </summary>
     [HttpPost("{chatId:guid}/leave")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> LeaveGroup(Guid chatId, CancellationToken cancellationToken)
     {
         var userId = GetCurrentUserId();
@@ -51,7 +86,12 @@ public class ChatsController(IChatService chatService, IMessageService messageSe
         return NoContent();
     }
 
+    /// <summary>
+    /// Retrieves all chats for the current user.
+    /// </summary>
     [HttpGet]
+    [ProducesResponseType(typeof(IReadOnlyList<ChatDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<IReadOnlyList<ChatDto>>> GetUserChats(CancellationToken cancellationToken)
     {
         var userId = GetCurrentUserId();
@@ -59,7 +99,15 @@ public class ChatsController(IChatService chatService, IMessageService messageSe
         return Ok(chats);
     }
 
+    /// <summary>
+    /// Retrieves messages for a specific chat with pagination.
+    /// </summary>
     [HttpGet("{chatId:guid}/messages")]
+    [ProducesResponseType(typeof(PagedResultDto<MessageDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<PagedResultDto<MessageDto>>> GetMessages(Guid chatId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 50, CancellationToken cancellationToken = default)
     {
         var userId = GetCurrentUserId();
@@ -78,4 +126,3 @@ public class AddUserToGroupRequestDto
 {
     public string UserName { get; set; } = string.Empty;
 }
-
