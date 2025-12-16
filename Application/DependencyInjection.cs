@@ -13,6 +13,8 @@ public static class DependencyInjection
         services.AddValidatorsFromAssemblyContaining<RegisterRequestDtoValidator>();
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IChatService, ChatService>();
+        services.AddScoped<IMessageService, MessageService>();
 
         return services;
     }
