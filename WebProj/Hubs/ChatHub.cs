@@ -1,6 +1,7 @@
 using Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using System.ComponentModel;
 using System.Security.Claims;
 
 namespace WebProj.Hubs;
@@ -8,6 +9,7 @@ namespace WebProj.Hubs;
 [Authorize]
 public class ChatHub(IMessageService messageService, IChatService chatService) : Hub
 {
+    [Description("Joins a user to a specific chat group to receive real-time updates.")]
     public async Task JoinChat(Guid chatId)
     {
         var userId = GetCurrentUserId();
@@ -20,6 +22,7 @@ public class ChatHub(IMessageService messageService, IChatService chatService) :
         await Groups.AddToGroupAsync(Context.ConnectionId, GetGroupName(chatId));
     }
 
+    [Description("Removes a user from a specific chat group.")]
     public async Task LeaveChat(Guid chatId)
     {
         var userId = GetCurrentUserId();
@@ -32,6 +35,7 @@ public class ChatHub(IMessageService messageService, IChatService chatService) :
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, GetGroupName(chatId));
     }
 
+    [Description("Sends a message to a specific chat group and notifies all members.")]
     public async Task SendMessage(Guid chatId, string content)
     {
         var userId = GetCurrentUserId();
@@ -49,4 +53,3 @@ public class ChatHub(IMessageService messageService, IChatService chatService) :
 
     private static string GetGroupName(Guid chatId) => $"chat-{chatId}";
 }
-

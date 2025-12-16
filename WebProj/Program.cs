@@ -73,6 +73,9 @@ public class Program
                         Array.Empty<string>()
                     }
                 });
+
+                var xmlFilename = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
             });
 
             builder.Services.AddCors(options =>
