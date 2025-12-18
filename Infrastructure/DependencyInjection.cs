@@ -47,8 +47,10 @@ public static class DependencyInjection
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
 
-        var jwtSettings = configuration.GetSection("JwtSettings");
+        var jwtSettings = configuration.GetSection(JwtSettings.SectionName);
+        var rateLimitingSettings = configuration.GetSection(RateLimitingSettings.SectionName);
         services.Configure<JwtSettings>(jwtSettings);
+        services.Configure<RateLimitingSettings>(rateLimitingSettings);
 
         var secretKey = jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey is not configured");
         var key = Encoding.UTF8.GetBytes(secretKey);
