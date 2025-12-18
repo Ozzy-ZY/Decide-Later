@@ -26,7 +26,7 @@ public class Program
 
         try
         {
-            Log.Information("Starting Chat App API");
+            Log.Information("Starting Balzgram API");
             
             var builder = WebApplication.CreateBuilder(args);
             builder.Host.UseSerilog();
@@ -43,7 +43,7 @@ public class Program
             {
                 options.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "Chat App API",
+                    Title = "Balzgram API",
                     Version = "v1",
                     Description = "A simple chat application API with SignalR support"
                 });
@@ -97,7 +97,7 @@ public class Program
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Chat App API v1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Balzgram API v1");
             });
 
 
