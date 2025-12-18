@@ -62,7 +62,7 @@ public class MessageService(IChatRepository chatRepository, IMessageRepository m
             {
                 Id = m.Id,
                 ChatId = m.ChatId,
-                SenderUserName = string.Empty,
+                SenderUserName = m.Sender!.UserName!, // must be non-null because of the join
                 Content = m.Content,
                 SentAtUtc = m.SentAtUtc
             })

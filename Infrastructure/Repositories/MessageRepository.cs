@@ -23,6 +23,7 @@ public class MessageRepository : IMessageRepository
     {
         var query = _context.Messages
             .Where(m => m.ChatId == chatId && !m.IsDeleted)
+            .Include(m => m.Sender)
             .OrderByDescending(m => m.SentAtUtc);
 
         var totalCount = await query.CountAsync(cancellationToken);
