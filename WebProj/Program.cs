@@ -79,9 +79,11 @@ public class Program
             {
                 options.AddPolicy("AllowAll", policy =>
                 {
-                    policy.AllowAnyOrigin()
+                    policy
+                        .SetIsOriginAllowed(_ => true)
+                        .AllowAnyHeader()
                         .AllowAnyMethod()
-                        .AllowAnyHeader();
+                        .AllowCredentials();             
                 });
             });
 
@@ -100,14 +102,11 @@ public class Program
 
 
             app.UseHttpsRedirection();
-
             app.UseCors("AllowAll");
-
             app.UseAuthentication();
             app.UseAuthorization();
-
             app.MapControllers().RequireCors("AllowAll");
-            app.MapHub<ChatHub>("/hubs/chat");
+            app.MapHub<ChatHub>("/hubs/chat").RequireCors("AllowAll");
 
             // Simple health endpoint
             app.MapGet("/health", async (IConfiguration config) =>
