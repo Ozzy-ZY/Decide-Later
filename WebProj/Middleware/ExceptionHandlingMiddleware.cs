@@ -29,6 +29,7 @@ public class ExceptionHandlingMiddleware(
         // Map common exception types to appropriate status codes
         var statusCode = ex switch
         {
+            RateLimitExceededException => StatusCodes.Status429TooManyRequests,
             MessageValidationException => StatusCodes.Status400BadRequest,
             MessageUnauthorizedException => StatusCodes.Status403Forbidden,
             ChatNotFoundException => StatusCodes.Status404NotFound,
