@@ -1,27 +1,28 @@
-name: Deploy to Azure App Service
-
-on:
-  workflow_run:
-    workflows: ["Build and Push Docker Image"]
-    types:
-      - completed
-    branches: [master]
-
-env:
-  AZURE_WEBAPP_NAME: Balzgram-api
-  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/balzgram
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
-
-    steps:
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          images: ${{ env.IMAGE_NAME }}:latest
-
-
+#name: Deploy to Azure App Service
+#
+#on:
+#  workflow_run:
+#    workflows: ["Build and Push Docker Image"]
+#    types:
+#      - completed
+#    branches: [master]
+#
+#env:
+#  AZURE_WEBAPP_NAME: Balzgram-api
+#  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/balzgram
+#
+#jobs:
+#  deploy:
+#    runs-on: ubuntu-latest
+#    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+#
+#    steps:
+#      - name: Deploy to Azure Web App
+#        uses: azure/webapps-deploy@v3
+#        with:
+#          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+#          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+#          images: ${{ env.IMAGE_NAME }}:latest
+#
+#
+#
