@@ -1,9 +1,11 @@
 using Infrastructure;
+using Infrastructure.Configurations;
 using Microsoft.OpenApi.Models;
 using Npgsql;
 using Serilog;
 using WebProj.Hubs;
 using WebProj.Middleware;
+using WebProj.RateLimiting;
 
 namespace WebProj;
 
@@ -38,7 +40,11 @@ public class Program
 
             builder.Services.AddSignalR();
 
-            // Configure Swagger/OpenAPI
+            builder.Services.AddAppRateLimiting(builder.Configuration);
+            var rateLimitingSettings = builder.Configuration.GetSection(RateLimitingSettings.SectionName)
+                .Get<RateLimitingSettings>()
+                ?? new RateLimitingSettings();
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>
             {
@@ -95,7 +101,7 @@ public class Program
                 options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
             });
             app.UseGlobalExceptionHandler();
-            
+            app.UseAppRateLimiting();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
@@ -107,8 +113,14 @@ public class Program
             app.UseCors("AllowAll");
             app.UseAuthentication();
             app.UseAuthorization();
-            app.MapControllers().RequireCors("AllowAll");
-            app.MapHub<ChatHub>("/hubs/chat").RequireCors("AllowAll");
+
+            app.MapControllers()
+                .RequireCors("AllowAll")
+                .RequireAppRateLimiting(rateLimitingSettings.Http.PerUser.PolicyName);
+
+            app.MapHub<ChatHub>("/hubs/chat")
+                .RequireCors("AllowAll")
+                .RequireAppRateLimiting(rateLimitingSettings.Http.PerUser.PolicyName);
 
             // Simple health endpoint
             app.MapGet("/health", async (IConfiguration config) =>
