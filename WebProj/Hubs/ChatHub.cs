@@ -2,6 +2,7 @@ using Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
+using Application.Exceptions;
 
 namespace WebProj.Hubs;
 
@@ -14,7 +15,7 @@ public class ChatHub(IMessageService messageService, IChatService chatService) :
         var isMember = await chatService.IsUserInChatAsync(chatId, userId);
         if (!isMember)
         {
-            throw new HubException("You are not a member of this chat.");
+            throw new ChatUnauthorizedException("You are not a member of this chat.");
         }
 
         await Groups.AddToGroupAsync(Context.ConnectionId, GetGroupName(chatId));
@@ -26,7 +27,7 @@ public class ChatHub(IMessageService messageService, IChatService chatService) :
         var isMember = await chatService.IsUserInChatAsync(chatId, userId);
         if (!isMember)
         {
-            throw new HubException("You are not a member of this chat.");
+            throw new ChatUnauthorizedException("You are not a member of this chat.");
         }
 
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, GetGroupName(chatId));
@@ -44,7 +45,7 @@ public class ChatHub(IMessageService messageService, IChatService chatService) :
     private string GetCurrentUserId()
     {
         return Context.User?.FindFirstValue(ClaimTypes.NameIdentifier)
-               ?? throw new HubException("User is not authenticated.");
+               ?? throw new ChatUnauthorizedException("User is not authenticated.");
     }
 
     private static string GetGroupName(Guid chatId) => $"chat-{chatId}";
