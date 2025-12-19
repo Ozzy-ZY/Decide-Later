@@ -18,6 +18,7 @@ public class ChatRepository : IChatRepository
     {
         return _context.Chats
             .Include(c => c.Members)
+            .ThenInclude(u => u.User)
             .Include(c => c.Messages)
             .FirstOrDefaultAsync(c => c.Id == chatId, cancellationToken);
     }

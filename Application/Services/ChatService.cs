@@ -203,6 +203,45 @@ public class ChatService(IChatRepository chatRepository, UserManager<Application
     {
         return chatRepository.IsUserInChatAsync(chatId, userId, cancellationToken);
     }
+    
+    public async Task<IReadOnlyList<ChatUserDto>> GetChatUsersAsync(
+        string currentUserId,
+        Guid chatId,
+        CancellationToken cancellationToken = default)
+    {
+        if (chatId == Guid.Empty)
+        {
+            throw new ChatOperationException("ChatId is required");
+        }
+
+        var currentUserExists = await userManager.Users.AnyAsync(u => u.Id == currentUserId, cancellationToken);
+        if (!currentUserExists)
+        {
+            throw new ChatOperationException("Current user not found");
+        }
+
+        var chat = await chatRepository.GetByIdAsync(chatId, cancellationToken)
+                   ?? throw new ChatNotFoundException("Chat not found");
+
+        var isMember = chat.Members.Any(m => m.UserId == currentUserId && m.LeftAtUtc == null);
+        if (!isMember)
+        {
+            throw new ChatUnauthorizedException("You are not a member of this chat.");
+        }
+
+        var members = chat.Members
+            .Where(m => m.LeftAtUtc == null)
+            .Select(m => new ChatUserDto
+            {
+                Id = m.UserId,
+                UserName = m.User.UserName ?? string.Empty,
+                IsOwner = m.IsOwner
+            })
+            .OrderBy(u => u.UserName)
+            .ToList();
+
+        return members;
+    }
 
     private static ChatDto MapToChatDto(Chat chat)
     {

@@ -20,7 +20,9 @@ public interface IChatService
 
     Task<ChatDto> CreatePrivateChatAsync(string currentUserId, string targetUserName,
         CancellationToken cancellationToken = default);
+    
+    Task<IReadOnlyList<ChatUserDto>> GetChatUsersAsync(
+        string currentUserId,
+        Guid chatId,
+        CancellationToken cancellationToken = default);
 }
-
-
-

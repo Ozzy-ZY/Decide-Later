@@ -116,6 +116,23 @@ public class ChatsController(IChatService chatService, IMessageService messageSe
         return Ok(messages);
     }
 
+    /// <summary>
+    /// Retrieves active members of a chat.
+    /// The caller must be an active member of that chat.
+    /// </summary>
+    [HttpGet("{chatId:guid}/members")]
+    [ProducesResponseType(typeof(IReadOnlyList<ChatUserDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<IReadOnlyList<ChatUserDto>>> GetChatMembers(Guid chatId, CancellationToken cancellationToken)
+    {
+        var userId = GetCurrentUserId();
+        var users = await chatService.GetChatUsersAsync(userId, chatId, cancellationToken);
+        return Ok(users);
+    }
+
     private string GetCurrentUserId()
     {
         return User.FindFirstValue(ClaimTypes.NameIdentifier)
