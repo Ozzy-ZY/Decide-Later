@@ -31,6 +31,7 @@ public class ExceptionHandlingMiddleware(
         {
             RateLimitExceededException => StatusCodes.Status429TooManyRequests,
             MessageValidationException => StatusCodes.Status400BadRequest,
+            MessageNotFoundException => StatusCodes.Status404NotFound,
             MessageUnauthorizedException => StatusCodes.Status403Forbidden,
             ChatNotFoundException => StatusCodes.Status404NotFound,
             ChatUnauthorizedException => StatusCodes.Status403Forbidden,

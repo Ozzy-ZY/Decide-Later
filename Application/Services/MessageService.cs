@@ -33,14 +33,19 @@ public class MessageService(IChatRepository chatRepository, IMessageRepository m
 
         await messageRepository.AddAsync(message, cancellationToken);
         await messageRepository.SaveChangesAsync(cancellationToken);
+        var saved = await messageRepository.GetByIdWithSenderAsync(message.Id, cancellationToken);
+        if (saved is null)
+        {
+            throw new MessageNotFoundException("Message was not found after saving.");
+        }
 
         return new MessageDto
         {
-            Id = message.Id,
-            ChatId = message.ChatId,
-            SenderUserName = string.Empty,
-            Content = message.Content,
-            SentAtUtc = message.SentAtUtc
+            Id = saved.Id,
+            ChatId = saved.ChatId,
+            SenderUserName = saved.Sender?.UserName ?? "Hanz_Error",
+            Content = saved.Content,
+            SentAtUtc = saved.SentAtUtc
         };
     }
 
@@ -78,4 +83,3 @@ public class MessageService(IChatRepository chatRepository, IMessageRepository m
         };
     }
 }
-

@@ -6,4 +6,5 @@ public class MessageValidationException(string message, string? parameterName = 
 }
 
 public class MessageUnauthorizedException(string message) : Exception(message);
+public class MessageNotFoundException(string message) : Exception(message);
 

@@ -14,9 +14,17 @@ public class MessageRepository : IMessageRepository
         _context = context;
     }
 
-    public async Task AddAsync(Message message, CancellationToken cancellationToken = default)
+    public async Task<Message> AddAsync(Message message, CancellationToken cancellationToken = default)
     {
         await _context.Messages.AddAsync(message, cancellationToken);
+        return message;
+    }
+
+    public Task<Message?> GetByIdWithSenderAsync(Guid messageId, CancellationToken cancellationToken = default)
+    {
+        return _context.Messages
+            .Include(m => m.Sender)
+            .FirstOrDefaultAsync(m => m.Id == messageId && !m.IsDeleted, cancellationToken);
     }
 
     public async Task<(IReadOnlyList<Message> Items, int TotalCount)> GetMessagesPagedAsync(Guid chatId, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
@@ -41,4 +49,3 @@ public class MessageRepository : IMessageRepository
         return _context.SaveChangesAsync(cancellationToken);
     }
 }
-
