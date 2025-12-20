@@ -32,8 +32,15 @@ services:
       - .env
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
-      - ConnectionStrings__DefaultConnection=Host=postgres;Port=${POSTGRES_PORT};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
-      - ConnectionStrings__ProductionDbConnection=Host=postgres;Port=${POSTGRES_PORT};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      - JwtSettings__SecretKey=${JwtSettings__SecretKey}
+      - JwtSettings__Issuer=${JwtSettings__Issuer}
+      - JwtSettings__Audience=${JwtSettings__Audience}
+      - JwtSettings__ExpirationInMinutes=${JwtSettings__ExpirationInMinutes}
+      - JwtSettings__RefreshTokenExpirationInDays=${JwtSettings__RefreshTokenExpirationInDays}
+      - CloudinarySettings__CloudName=${CloudinarySettings__CloudName}
+      - CloudinarySettings__ApiKey=${CloudinarySettings__ApiKey}
+      - CloudinarySettings__ApiSecret=${CloudinarySettings__ApiSecret}
+      - ConnectionStrings__DefaultConnection=Host=${POSTGRES_HOST};Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
 
     ports:
       - "${WEBPORT}:80"
