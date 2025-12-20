@@ -69,7 +69,7 @@ public class ImageService(ICloudinaryService cloudinaryService, IImageRepository
         bool isId,
         CancellationToken cancellationToken = default)
     {
-        Image? image;
+        Image image;
         if (isId)
         {
             image = await imageRepository.GetProfilePictureByUserIdAsync(userIdOrUsername, cancellationToken)
@@ -77,9 +77,10 @@ public class ImageService(ICloudinaryService cloudinaryService, IImageRepository
         }
         else
         {
-            image = await imageRepository.GetProfilePictureByUsernameAsync(userIdOrUsername, cancellationToken);
+            image = await imageRepository.GetProfilePictureByUsernameAsync(userIdOrUsername, cancellationToken)
+                ?? throw new ImageNotFoundException("No profile picture found for this user");
         }
-
+        
         return new ImageDto(
             Id: image.Id,
             PublicId: image.PublicId,
