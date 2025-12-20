@@ -1,3 +1,4 @@
+using Application;
 using Infrastructure;
 using Infrastructure.Configurations;
 using Microsoft.OpenApi.Models;
@@ -33,7 +34,7 @@ public class Program
             
             var builder = WebApplication.CreateBuilder(args);
             builder.Host.UseSerilog();
-
+            builder.Services.AddApplication();
             builder.Services.AddInfrastructure(builder.Configuration);
 
             builder.Services.AddControllers();

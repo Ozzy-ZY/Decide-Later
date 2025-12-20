@@ -2,6 +2,7 @@ using Application.DTOs.Chat;
 using Application.Interfaces;
 using Domain.Models;
 using Application.Exceptions;
+using Infrastructure.Repositories.Interfaces;
 
 namespace Application.Services;
 

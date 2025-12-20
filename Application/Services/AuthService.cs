@@ -1,6 +1,7 @@
 using Application.DTOs.Auth;
 using Application.Interfaces;
 using Domain.Models;
+using Infrastructure.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;

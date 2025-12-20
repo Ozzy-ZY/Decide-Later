@@ -4,6 +4,7 @@ using Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Application.Exceptions;
+using Infrastructure.Repositories.Interfaces;
 
 namespace Application.Services;
 

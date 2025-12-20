@@ -1,10 +1,9 @@
 using System.Text;
-using Application;
-using Application.Interfaces;
 using Domain.Models;
 using Infrastructure.Configurations;
 using Infrastructure.DataAccess.Db;
 using Infrastructure.Repositories;
+using Infrastructure.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -18,8 +17,6 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddApplication();
-        
         var connectionString = configuration.GetConnectionString("DefaultConnection");
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(connectionString));
@@ -49,8 +46,10 @@ public static class DependencyInjection
 
         var jwtSettings = configuration.GetSection(JwtSettings.SectionName);
         var rateLimitingSettings = configuration.GetSection(RateLimitingSettings.SectionName);
+        var cloudinarySettings = configuration.GetSection(CloudinarySettings.SectionName);
         services.Configure<JwtSettings>(jwtSettings);
         services.Configure<RateLimitingSettings>(rateLimitingSettings);
+        services.Configure<CloudinarySettings>(cloudinarySettings);
 
         var secretKey = jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey is not configured");
         var key = Encoding.UTF8.GetBytes(secretKey);
