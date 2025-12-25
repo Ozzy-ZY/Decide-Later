@@ -98,10 +98,10 @@ public class AuthController(
             return Unauthorized(response);
         }
 
-        if (string.IsNullOrEmpty(refreshToken))
+        if (string.IsNullOrEmpty(newRefreshToken))
             return Ok(response);
-        SetRefreshTokenCookie(refreshToken);
-        response.RefreshToken = HttpContext.Request.Headers["X-Client-Type"].ToString() == "server" ? refreshToken : null;
+        SetRefreshTokenCookie(newRefreshToken);
+        response.RefreshToken = HttpContext.Request.Headers["X-Client-Type"].ToString() == "server" ? newRefreshToken : null;
 
         return Ok(response);
     }
