@@ -23,12 +23,6 @@ public record ChangePasswordRequestDto
     public required string ConfirmNewPassword { get; init; }
 }
 
-public record RefreshTokenRequestDto
-{
-    // Token will be read from HTTP-only cookie, but we can also accept it in body for flexibility
-    public string? RefreshToken { get; init; }
-}
-
 public record UserProfileResponseDto
 {
     public string Id { get; init; } = string.Empty;
@@ -47,6 +41,8 @@ public record AuthResponseDto
     public DateTime? ExpiresAt { get; init; }
     public UserProfileResponseDto? User { get; init; }
     public IEnumerable<string>? Errors { get; init; }
+    
+    public string? RefreshToken { get; set; }
 }
 
 public record ChangePasswordResponseDto

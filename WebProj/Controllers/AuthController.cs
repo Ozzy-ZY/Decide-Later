@@ -32,10 +32,11 @@ public class AuthController(
         {
             return BadRequest(response);
         }
-        if (!string.IsNullOrEmpty(refreshToken))
-        {
-            SetRefreshTokenCookie(refreshToken);
-        }
+
+        if (string.IsNullOrEmpty(refreshToken))
+            return Ok(response);
+        SetRefreshTokenCookie(refreshToken);
+        response.RefreshToken = HttpContext.Request.Headers["X-Client-Type"].ToString() == "server" ? refreshToken : null;
 
         return Ok(response);
     }
@@ -57,10 +58,11 @@ public class AuthController(
         {
             return Unauthorized(response);
         }
-        if (!string.IsNullOrEmpty(refreshToken))
-        {
-            SetRefreshTokenCookie(refreshToken);
-        }
+
+        if (string.IsNullOrEmpty(refreshToken))
+            return Ok(response);
+        SetRefreshTokenCookie(refreshToken);
+        response.RefreshToken = HttpContext.Request.Headers["X-Client-Type"].ToString() == "server" ? refreshToken : null;
 
         return Ok(response);
     }
@@ -91,10 +93,11 @@ public class AuthController(
             DeleteRefreshTokenCookie();
             return Unauthorized(response);
         }
-        if (!string.IsNullOrEmpty(newRefreshToken))
-        {
-            SetRefreshTokenCookie(newRefreshToken);
-        }
+
+        if (string.IsNullOrEmpty(refreshToken))
+            return Ok(response);
+        SetRefreshTokenCookie(refreshToken);
+        response.RefreshToken = HttpContext.Request.Headers["X-Client-Type"].ToString() == "server" ? refreshToken : null;
 
         return Ok(response);
     }
