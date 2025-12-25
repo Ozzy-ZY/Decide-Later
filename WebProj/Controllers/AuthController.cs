@@ -145,13 +145,18 @@ public class AuthController(
     public async Task<IActionResult> Logout()
     {
         var refreshToken = Request.Cookies[RefreshTokenCookieName];
-
         if (!string.IsNullOrEmpty(refreshToken))
         {
             await authService.RevokeTokenAsync(refreshToken, "User logged out");
+            DeleteRefreshTokenCookie();
         }
-
-        DeleteRefreshTokenCookie();
+        var clientType = HttpContext.Request.Headers["X-Client-Type"].ToString();
+        if (clientType != "server")
+        {
+            return Ok(new { message = "Logged out successfully" });
+        }
+        refreshToken = Request.Headers["Refresh-Token"].ToString();
+        await authService.RevokeTokenAsync(refreshToken, "User logged out");
 
         return Ok(new { message = "Logged out successfully" });
     }
